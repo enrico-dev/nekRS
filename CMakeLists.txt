@@ -6,7 +6,7 @@ include(FortranCInterface)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 # =============================================================================
-# Set environment variables
+# Handle cache variables
 # =============================================================================
 
 set(NEKRS_CXX "$ENV{CXX}" CACHE STRING "C++ compiler for NekRS")
@@ -24,6 +24,7 @@ set(NEKRS_INSTALL_DIR "$CMAKE_CURRENT_BINARY_DIR/install" CACHE PATH
   "Installation directory for NekRS and dependent libraries")
 set(NEKRS_DIR "$CMAKE_CURRENT_LIST_DIR" CACHE PATH
   "Source directory for NekRS")
+set(NEKRS_DEBUG "$ENV{NEKRS_DEBUG}" CACHE BOOL "Compile/run NekRS in debug mode")
 
 set(NEKRS_UDF_DIR "${NEKRS_INSTALL_DIR}/udf" CACHE PATH 
   "Installation directory for UDF in NekRS")
@@ -45,9 +46,18 @@ set(OCCA_HIP_ENABLED OFF CACHE BOOL)
 set(OCCA_OPENCL_ENABLED OFF CACHE BOOL)
 set(OCCA_METAL_ENABLED OFF CACHE BOOL)
 
-# =============================================================================
+# Set build mode
+----------------
+if(NEKRS_DEBUG) 
+  set(CMAKE_BUILD_TYPE "Debug" CACHE INTERNAL "Build type for NekRS")
+endif()
+
 # Install bin/bashrc file
-# =============================================================================
+# -----------------------
+configure_file(
+  ${CMAKE_CURRENT_LIST_DIR}/config/nekrs.bashrc.in
+  ${NEKRS_INSTALL_DIR}/bin/nekrs.bashrc
+  @ONLY)
 
 # =============================================================================
 # RPATH Handling
@@ -126,11 +136,11 @@ set(NEKINTERFACEDIR "${CMAKE_SOURCE_DIR}/src/nekInterface/")
 ###############################################################################
 # Check if installed already                                                  #
 ###############################################################################
-if (EXISTS "${CMAKE_INSTALL_PREIFX}/occa")
-  message(WARNING "Found OCCA already installed at ${CMAKE_INSTALL_PREIFX}/.")
+if (EXISTS "${CMAKE_INSTALL_PREFIX}/occa")
+  message(WARNING "Found OCCA already installed at ${CMAKE_INSTALL_PREFIX}/.")
 endif()
-if (EXISTS "${CMAKE_INSTALL_PREIFX}/libparanumal")
-  message(WARNING "Found libparanumal already installed at ${CMAKE_INSTALL_PREIFX}/.")
+if (EXISTS "${CMAKE_INSTALL_PREFIX}/libparanumal")
+  message(WARNING "Found libparanumal already installed at ${CMAKE_INSTALL_PREFIX}/.")
 endif()
 
 ###############################################################################
