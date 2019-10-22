@@ -5,39 +5,53 @@ include(FortranCInterface)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-###############################################################################
+# =============================================================================
 # Set environment variables
-###############################################################################
+# =============================================================================
 
-set(nekrs_cxx "$ENV{CXX}" CACHE string "C++ compiler for NekRS")
-set(nekrs_cc "$ENV{CC}" CACHE string "C compiler for NekRS")
-set(nekrs_fc "$ENV{FC}" CACHE string "Fortran compiler for NekRS")
-set(nekrs_cflags "$ENV{CFLAGS}" CACHE "C Compiler flags for NekRS")
-set(nekrs_fflags "$ENV{FFLAGS}" CACHE "Fortran flags for NekRS")
+set(NEKRS_CXX "$ENV{CXX}" CACHE STRING "C++ compiler for NekRS")
+set(NEKRS_CC "$ENV{CC}" CACHE STRING "C compiler for NekRS")
+set(NEKRS_FC "$ENV{FC}" CACHE STRING "Fortran compiler for NekRS")
+set(NEKRS_CXXFLAGS "$ENV{CXXFLAGS}" CACHE STRING "C Compiler flags for NekRS")
+set(NEKRS_CFLAGS "$ENV{CFLAGS}" CACHE STRING "C Compiler flags for NekRS")
+set(NEKRS_FFLAGS "$ENV{FFLAGS}" CACHE STRING "Fortran flags for NekRS")
 
-NEKRS_LIBP_DEFINES="-DUSE_NULL_PROJECTION=1"
-NEKRS_NEK5000_PPLIST="PARRSB DPROCMAP"
-NEKRS_INSTALL_DIR="$(pwd)/install"
-NEKRS_DIR="$(pwd)"
+set(NEKRS_LIBP_DEFINES "-DUSE_NULL_PROJECTION=1" CACHE STRING 
+  "libparanumal preprocessor symbols for NekRS")
+set(NEKRS_NEK5000_PPLIST "PARRSB DPROCMAP" CACHE STRING 
+  "Nek5000 preprocessor symbols for NekRS")
+set(NEKRS_INSTALL_DIR "$CMAKE_CURRENT_BINARY_DIR/install" CACHE PATH 
+  "Installation directory for NekRS and dependent libraries")
+set(NEKRS_DIR "$CMAKE_CURRENT_LIST_DIR" CACHE PATH
+  "Source directory for NekRS")
 
-NEKRS_UDF_DIR="${NEKRS_INSTALL_DIR}/udf"
-NEKRS_NEKINTERFACE_DIR="${NEKRS_INSTALL_DIR}/nekInterface"
-NEKRS_NEK5000_DIR="${NEKRS_INSTALL_DIR}/nek5000"
-NEKRS_LIBP_DIR="${NEKRS_INSTALL_DIR}/libparanumal"
+set(NEKRS_UDF_DIR "${NEKRS_INSTALL_DIR}/udf" CACHE PATH 
+  "Installation directory for UDF in NekRS")
+set(NEKRS_NEKINTERFACE_DIR "${NEKRS_INSTALL_DIR}/nekInterface" CACHE PATH 
+  "Installation directory for Nek5000 interface in NekRS")
+set(NEKRS_NEK5000_DIR "${NEKRS_INSTALL_DIR}/nek5000" CACHE PATH
+  "Installation directory for Nek5000 in NekRS")
+set(NEKRS_LIBP_DIR "${NEKRS_INSTALL_DIR}/libparanumal" CACHE PATH
+  "Installation directory for libparanumal in NekRS")
 
-OCCA_CXX="$CXX"
-OCCA_CXXFLAGS="${NEKRS_CXXFLAGS} ${NEKRS_LIBP_DEFINES}"
-OCCA_DIR="${NEKRS_INSTALL_DIR}/occa"
+set(OCCA_CXX "$ENV{OCCA_CXX}" CACHE STRING "C++ compiler for OCCA")
+set(OCCA_CXXFLAGS "${NEKRS_CXXFLAGS} ${NEKRS_LIBP_DEFINES}" CACHE STRING "C++ flags for OCCA")
+set(OCCA_DIR "${NEKRS_INSTALL_DIR}/occa" CACHE PATH "Installation directory for OCCA")
 
-# ========================================================================
-# Runtime?
-# ========================================================================
-export OCCA_CUDA_ENABLED=1
-export OCCA_HIP_ENABLED=0
-export OCCA_OPENCL_ENABLED=0
-export OCCA_METAL_ENABLED=0
+# Runtime only?
+# -------------
+set(OCCA_CUDA_ENABLED ON CACHE BOOL)
+set(OCCA_HIP_ENABLED OFF CACHE BOOL)
+set(OCCA_OPENCL_ENABLED OFF CACHE BOOL)
+set(OCCA_METAL_ENABLED OFF CACHE BOOL)
 
+# =============================================================================
+# Install bin/bashrc file
+# =============================================================================
 
+# =============================================================================
+# RPATH Handling
+# =============================================================================
 
 #Link:https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
@@ -97,8 +111,8 @@ set (CMAKE_CXX_STANDARD 14)
 ###############################################################################
 # Setup cmake variables                                                       #
 ###############################################################################
-set(BIN_THIRD_PARTY_DIR "${CMAKE_BINARY_DIR}/3rd_party" CACHE STRING "")
-set(SRC_THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/3rd_party" CACHE STRING "")
+set(BIN_THIRD_PARTY_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rd_party" CACHE STRING "")
+set(SRC_THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rd_party" CACHE STRING "")
 
 set(LIBPDIR "${BIN_THIRD_PARTY_DIR}/libparanumal")
 set(ELLIPTICDIR "${LIBPDIR}/solvers/elliptic")
