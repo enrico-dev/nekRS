@@ -5,6 +5,40 @@ include(FortranCInterface)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+###############################################################################
+# Set environment variables
+###############################################################################
+
+set(nekrs_cxx "$ENV{CXX}" CACHE string "C++ compiler for NekRS")
+set(nekrs_cc "$ENV{CC}" CACHE string "C compiler for NekRS")
+set(nekrs_fc "$ENV{FC}" CACHE string "Fortran compiler for NekRS")
+set(nekrs_cflags "$ENV{CFLAGS}" CACHE "C Compiler flags for NekRS")
+set(nekrs_fflags "$ENV{FFLAGS}" CACHE "Fortran flags for NekRS")
+
+NEKRS_LIBP_DEFINES="-DUSE_NULL_PROJECTION=1"
+NEKRS_NEK5000_PPLIST="PARRSB DPROCMAP"
+NEKRS_INSTALL_DIR="$(pwd)/install"
+NEKRS_DIR="$(pwd)"
+
+NEKRS_UDF_DIR="${NEKRS_INSTALL_DIR}/udf"
+NEKRS_NEKINTERFACE_DIR="${NEKRS_INSTALL_DIR}/nekInterface"
+NEKRS_NEK5000_DIR="${NEKRS_INSTALL_DIR}/nek5000"
+NEKRS_LIBP_DIR="${NEKRS_INSTALL_DIR}/libparanumal"
+
+OCCA_CXX="$CXX"
+OCCA_CXXFLAGS="${NEKRS_CXXFLAGS} ${NEKRS_LIBP_DEFINES}"
+OCCA_DIR="${NEKRS_INSTALL_DIR}/occa"
+
+# ========================================================================
+# Runtime?
+# ========================================================================
+export OCCA_CUDA_ENABLED=1
+export OCCA_HIP_ENABLED=0
+export OCCA_OPENCL_ENABLED=0
+export OCCA_METAL_ENABLED=0
+
+
+
 #Link:https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
