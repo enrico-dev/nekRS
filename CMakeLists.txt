@@ -5,64 +5,6 @@ include(FortranCInterface)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-# =============================================================================
-# Handle cache variables
-# =============================================================================
-
-set(NEKRS_CXX "$ENV{CXX}" CACHE STRING "C++ compiler for NekRS")
-set(NEKRS_CC "$ENV{CC}" CACHE STRING "C compiler for NekRS")
-set(NEKRS_FC "$ENV{FC}" CACHE STRING "Fortran compiler for NekRS")
-set(NEKRS_CXXFLAGS "$ENV{CXXFLAGS}" CACHE STRING "C Compiler flags for NekRS")
-set(NEKRS_CFLAGS "$ENV{CFLAGS}" CACHE STRING "C Compiler flags for NekRS")
-set(NEKRS_FFLAGS "$ENV{FFLAGS}" CACHE STRING "Fortran flags for NekRS")
-
-set(NEKRS_LIBP_DEFINES "-DUSE_NULL_PROJECTION=1" CACHE STRING 
-  "libparanumal preprocessor symbols for NekRS")
-set(NEKRS_NEK5000_PPLIST "PARRSB DPROCMAP" CACHE STRING 
-  "Nek5000 preprocessor symbols for NekRS")
-set(NEKRS_INSTALL_DIR "$CMAKE_CURRENT_BINARY_DIR/install" CACHE PATH 
-  "Installation directory for NekRS and dependent libraries")
-set(NEKRS_DIR "$CMAKE_CURRENT_LIST_DIR" CACHE PATH
-  "Source directory for NekRS")
-set(NEKRS_DEBUG "$ENV{NEKRS_DEBUG}" CACHE BOOL "Compile/run NekRS in debug mode")
-
-set(NEKRS_UDF_DIR "${NEKRS_INSTALL_DIR}/udf" CACHE PATH 
-  "Installation directory for UDF in NekRS")
-set(NEKRS_NEKINTERFACE_DIR "${NEKRS_INSTALL_DIR}/nekInterface" CACHE PATH 
-  "Installation directory for Nek5000 interface in NekRS")
-set(NEKRS_NEK5000_DIR "${NEKRS_INSTALL_DIR}/nek5000" CACHE PATH
-  "Installation directory for Nek5000 in NekRS")
-set(NEKRS_LIBP_DIR "${NEKRS_INSTALL_DIR}/libparanumal" CACHE PATH
-  "Installation directory for libparanumal in NekRS")
-
-set(OCCA_CXX "$ENV{OCCA_CXX}" CACHE STRING "C++ compiler for OCCA")
-set(OCCA_CXXFLAGS "${NEKRS_CXXFLAGS} ${NEKRS_LIBP_DEFINES}" CACHE STRING "C++ flags for OCCA")
-set(OCCA_DIR "${NEKRS_INSTALL_DIR}/occa" CACHE PATH "Installation directory for OCCA")
-
-# Runtime only?
-# -------------
-set(OCCA_CUDA_ENABLED ON CACHE BOOL)
-set(OCCA_HIP_ENABLED OFF CACHE BOOL)
-set(OCCA_OPENCL_ENABLED OFF CACHE BOOL)
-set(OCCA_METAL_ENABLED OFF CACHE BOOL)
-
-# Set build mode
-----------------
-if(NEKRS_DEBUG) 
-  set(CMAKE_BUILD_TYPE "Debug" CACHE INTERNAL "Build type for NekRS")
-endif()
-
-# Install bin/bashrc file
-# -----------------------
-configure_file(
-  ${CMAKE_CURRENT_LIST_DIR}/config/nekrs.bashrc.in
-  ${NEKRS_INSTALL_DIR}/bin/nekrs.bashrc
-  @ONLY)
-
-# =============================================================================
-# RPATH Handling
-# =============================================================================
-
 #Link:https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
@@ -119,19 +61,39 @@ endif()
 set (CMAKE_CXX_STANDARD 14)
 
 ###############################################################################
-# Setup cmake variables                                                       #
+# Setup cmake and default env variables                                       #
 ###############################################################################
-set(BIN_THIRD_PARTY_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rd_party" CACHE STRING "")
-set(SRC_THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rd_party" CACHE STRING "")
+set(BIN_THIRD_PARTY_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rd_party" CACHE PATH "")
+set(SRC_THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rd_party" CACHE PATH "")
 
-set(LIBPDIR "${BIN_THIRD_PARTY_DIR}/libparanumal")
-set(ELLIPTICDIR "${LIBPDIR}/solvers/elliptic")
-set(PARALMONDDIR "${LIBPDIR}/libs/parAlmond")
-set(OGSDIR "${LIBPDIR}/libs/gatherScatter")
-set(NEKDIR "${BIN_THIRD_PARTY_DIR}/nek5000")
-set(OCCADIR "${BIN_THIRD_PARTY_DIR}/occa")
+set(LIBPDIR "${BIN_THIRD_PARTY_DIR}/libparanumal" CACHE PATH "")
+set(ELLIPTICDIR "${LIBPDIR}/solvers/elliptic" CACHE PATH "")
+set(PARALMONDDIR "${LIBPDIR}/libs/parAlmond" CACHE PATH "")
+set(OGSDIR "${LIBPDIR}/libs/gatherScatter" CACHE PATH "")
+set(NEKDIR "${BIN_THIRD_PARTY_DIR}/nek5000" CACHE PATH "")
+set(OCCADIR "${BIN_THIRD_PARTY_DIR}/occa" CACHE PATH "")
 
-set(NEKINTERFACEDIR "${CMAKE_SOURCE_DIR}/src/nekInterface/")
+set(NEKINTERFACEDIR "${CMAKE_SOURCE_DIR}/src/nekInterface/" CACHE PATH "")
+set(NEKRS_DEBUG $<CONFIG:Debug> CACHE BOOL "")
+
+set(LIBP_DEFINES "$ENV{NEKRS_LIBP_DEFINES}" CACHE STRING "")
+set(NEK5000_PPLIST "$ENV{NEKRS_NEK5000_PPLIST}" CACHE STRING "")
+
+if (NOT DEFINED ENV{OCCA_CUDA_ENABLED})
+  set(ENV{OCCA_CUDA_ENABLED} 1)
+endif()
+
+if (NOT DEFINED ENV{OCCA_HIP_ENABLED})
+  set(ENV{OCCA_HIP_ENABLED} 0)
+endif()
+
+if (NOT DEFINED ENV{OCCA_OPENCL_ENABLED})
+  set(ENV{OCCA_OPENCL_ENABLED} 0)
+endif()
+
+if (NOT DEFINED ENV{OCCA_METAL_ENABLED})
+  set(ENV{OCCA_METAL_ENABLED} 0)
+endif()
 
 ###############################################################################
 # Check if installed already                                                  #
@@ -167,11 +129,17 @@ elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELEASE}")
 endif()
 
-if (NOT $ENV{NEKRS_LIBP_DEFINES} STREQUAL "")
-  set(LIBP_DEFINES "$ENV{NEKRS_LIBP_DEFINES}")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LIBP_DEFINES}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBP_DEFINES}")
-endif()
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LIBP_DEFINES}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBP_DEFINES}")
+
+###############################################################################
+# Generate nekrs.bashrc                                                       #
+###############################################################################
+
+configure_file(
+  ${CMAKE_CURRENT_LIST_DIR}/config/nekrs.bashrc.in
+  ${CMAKE_INSTALL_PREFIX}/bin/nekrs.bashrc
+  @ONLY)
 
 ###############################################################################
 # Start building nekRS                                                        #
@@ -206,6 +174,11 @@ add_custom_command(OUTPUT ${occa_lib}
     NEKRS_CXXFLAGS=${CMAKE_CXX_FLAGS}
     NEKRS_SRC_THIRD_PARTY_DIR=${SRC_THIRD_PARTY_DIR}
     NEKRS_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}
+    OCCA_DIR=${OCCADIR}
+    OCCA_CUDA_ENABLED="$ENV{OCCA_CUDA_ENABLED}"
+    OCCA_HIP_ENABLED="$ENV{OCCA_HIP_ENABLED}"
+    OCCA_OPENCL_ENABLED="$ENV{OCCA_OPENCL_ENABLED}"
+    OCCA_METAL_ENABLED="$ENV{OCCA_METAL_ENABLED}"
     ${SRC_THIRD_PARTY_DIR}/occa.build
 )
 add_library(occa SHARED IMPORTED)
