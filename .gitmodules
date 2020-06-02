@@ -1,0 +1,15 @@
+[submodule "3rd_party/nek5000"]
+	path = 3rd_party/nek5000
+	url = https://github.com/enrico-dev/Nek5000.git
+	branch = enrico
+[submodule "3rd_party/occa"]
+	path = 3rd_party/occa
+	url = https://github.com/libocca/occa.git
+	branch = master
+[submodule "3rd_party/libparanumal"]
+	path = 3rd_party/libparanumal
+	url = https://gitlab.com/nekrs/libparanumal.git
+	branch = next
+[submodule "3rd_party/hypre"]
+	path = 3rd_party/hypre
+	url = https://github.com/hypre-space/hypre.git
