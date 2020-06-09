@@ -36,8 +36,6 @@ set(LIB_OGS_SOURCES
 
 add_library(libogs ${LIB_OGS_SOURCES})
 set_target_properties(libogs PROPERTIES OUTPUT_NAME ogs)
-target_compile_options(libogs PRIVATE -x c++)
-target_link_options(libogs PRIVATE -x c++)
 # TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
 # when linking to libocca.  Hence, we can remove it from
 # target_include_directories when OCCA is updated.
