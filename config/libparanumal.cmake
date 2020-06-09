@@ -1,11 +1,60 @@
 # TODO: Need to get value from OCCA?
 set(USE_OCCA_MEM_BYTE_ALIGN 64)
 
+set(LIBP_DIR 3rd_party/libparanumal)
+
+# ---------------------------------------------------------
+# libogs
+# ---------------------------------------------------------
+
+set(LIB_OGS_DIR ${LIBP_DIR}/libs/gatherScatter)
+
+set(LIB_OGS_SOURCES
+        ${LIB_OGS_DIR}/src/ogsGather.cpp
+        ${LIB_OGS_DIR}/src/ogsGatherMany.cpp
+        ${LIB_OGS_DIR}/src/ogsGatherScatter.cpp
+        ${LIB_OGS_DIR}/src/ogsGatherScatterMany.cpp
+        ${LIB_OGS_DIR}/src/ogsGatherScatterVec.cpp
+        ${LIB_OGS_DIR}/src/ogsGatherVec.cpp
+        ${LIB_OGS_DIR}/src/ogsHostGather.c
+        ${LIB_OGS_DIR}/src/ogsHostGatherMany.c
+        ${LIB_OGS_DIR}/src/ogsHostGatherScatter.c
+        ${LIB_OGS_DIR}/src/ogsHostGatherScatterMany.c
+        ${LIB_OGS_DIR}/src/ogsHostGatherScatterVec.c
+        ${LIB_OGS_DIR}/src/ogsHostGatherVec.c
+        ${LIB_OGS_DIR}/src/ogsHostScatter.c
+        ${LIB_OGS_DIR}/src/ogsHostScatterMany.c
+        ${LIB_OGS_DIR}/src/ogsHostScatterVec.c
+        ${LIB_OGS_DIR}/src/ogsHostSetup.c
+        ${LIB_OGS_DIR}/src/ogsKernels.cpp
+        ${LIB_OGS_DIR}/src/ogsMappedAlloc.cpp
+        ${LIB_OGS_DIR}/src/ogsScatter.cpp
+        ${LIB_OGS_DIR}/src/ogsScatterMany.cpp
+        ${LIB_OGS_DIR}/src/ogsScatterVec.cpp
+        ${LIB_OGS_DIR}/src/ogsSetup.cpp
+        )
+
+add_library(libogs ${LIB_OGS_SOURCES})
+set_target_properties(libogs PROPERTIES OUTPUT_NAME ogs)
+target_compile_options(libogs PRIVATE -x c++)
+target_link_options(libogs PRIVATE -x c++)
+# TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
+# when linking to libocca.  Hence, we can remove it from
+# target_include_directories when OCCA is updated.
+target_include_directories(libogs PUBLIC
+        3rd_party/occa/include
+        ${CMAKE_BINARY_DIR}/3rd_party/occa
+        ${LIBP_DIR}/include
+        ${LIB_OGS_DIR}/include
+        ${LIB_OGS_DIR})
+target_link_libraries(libogs PUBLIC libgs libocca)
+target_compile_definitions(libogs PUBLIC
+        -DDHOLMES="${LIBP_DIR}"
+        -DDOGS="${LIB_OGS_DIR}")
+
 # ---------------------------------------------------------
 # libparanumal
 # ---------------------------------------------------------
-
-set(LIBP_DIR 3rd_party/libparanumal)
 
 set(LIBP_SOURCES
         ${LIBP_DIR}/src/meshConnectPeriodicFaceNodes3D.c
@@ -94,7 +143,7 @@ target_include_directories(libparanumal PUBLIC
         ${LIBP_DIR}/libs/gatherScatter
         ${LIBP_DIR}/libs/gatherScatter/include
         ${LIBP_DIR}/include)
-target_link_libraries(libparanumal PUBLIC libgs libocca blasLapack)
+target_link_libraries(libparanumal PUBLIC libogs libocca blasLapack)
 target_compile_definitions(libparanumal PUBLIC
         -DDHOLMES="${LIBP_DIR}"
         )
@@ -205,7 +254,7 @@ target_include_directories(libelliptic PUBLIC
         ${LIBP_DIR}/libs/gatherScatter/include
         ${LIB_PARALMOND_DIR}                # TODO: Why not included with libParalmond
         ${LIB_ELLIPTIC_DIR})
-target_link_libraries(libelliptic PUBLIC libocca libparAlmond libgs blasLapack)
+target_link_libraries(libelliptic PUBLIC libocca libparAlmond libogs blasLapack)
 target_compile_definitions(libelliptic PUBLIC
         -DUSE_OCCA_MEM_BYTE_ALIGN=${USE_OCCA_MEM_BYTE_ALIGN}
         -DDELLIPTIC="${LIB_ELLIPTIC_DIR}"
