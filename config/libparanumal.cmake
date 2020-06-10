@@ -129,7 +129,11 @@ set(PARANUMAL_SOURCES
 add_library(libparanumal ${PARANUMAL_SOURCES})
 set_target_properties(libparanumal PROPERTIES OUTPUT_NAME paranumal)
 target_compile_options(libparanumal PRIVATE -x c++)
-target_link_options(libparanumal PRIVATE -x c++)
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
+    target_link_options(libparanumal PRIVATE -x c++)
+else ()
+    set_target_properties(libparanumal PROPERTIES LINK_FLAGS "-x c++")
+endif ()
 # TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
 # when linking to libocca.  Hence, we can remove it from
 # target_include_directories when OCCA is updated.
@@ -229,7 +233,11 @@ set(ELLIPTIC_SOURCES
 add_library(libelliptic ${ELLIPTIC_SOURCES})
 set_target_properties(libelliptic PROPERTIES OUTPUT_NAME elliptic)
 target_compile_options(libelliptic PRIVATE -x c++)
-target_link_options(libelliptic PRIVATE -x c++)
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
+    target_link_options(libelliptic PRIVATE -x c++)
+else ()
+    set_target_properties(libelliptic PROPERTIES LINK_FLAGS "-x c++")
+endif ()
 # TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
 # when linking to libocca.  Hence, we can remove it from
 # target_include_directories when OCCA is updated.
