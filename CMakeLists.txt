@@ -142,14 +142,14 @@ set(NEKRS_SRC
 
 add_library(libnekrs ${NEKRS_SRC})
 set_target_properties(libnekrs PROPERTIES OUTPUT_NAME nekrs)
-target_include_directories(libnekrs PRIVATE
+target_include_directories(libnekrs PUBLIC
         src
         src/mesh
         src/core
         src/udf
         src/nekInterface
         )
-target_link_libraries(libnekrs PRIVATE
+target_link_libraries(libnekrs PUBLIC
         libocca
         libparanumal
         libnek5000
@@ -159,8 +159,7 @@ target_link_libraries(libnekrs PRIVATE
         )
 
 add_executable(nekrs src/main.cpp)
-target_link_libraries(nekrs PRIVATE libnekrs)
-target_include_directories(nekrs PRIVATE ${THIRD_PARTY_INCLUDES} ${NEKRS_INCLUDES})
+target_link_libraries(nekrs PUBLIC libnekrs)
 
 #################################################################################
 ### Install                                                                     #

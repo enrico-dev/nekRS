@@ -153,6 +153,7 @@ target_compile_definitions(libparanumal PUBLIC
 set(PARALMOND_DIR ${PARANUMAL_DIR}/libs/parAlmond)
 
 set(PARALMOND_SOURCES
+        ${PARALMOND_DIR}/hypre/hypre.c
         ${PARALMOND_DIR}/src/SpMV.cpp
         ${PARALMOND_DIR}/src/agmgLevel.cpp
         ${PARALMOND_DIR}/src/agmgSetup/agmgSetup.cpp
