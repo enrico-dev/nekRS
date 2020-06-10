@@ -54,6 +54,7 @@ target_compile_definitions(libogs PUBLIC
 # ---------------------------------------------------------
 
 set(PARANUMAL_SOURCES
+        src/core/occaDeviceConfig.cpp
         ${PARANUMAL_DIR}/src/hash.c
         ${PARANUMAL_DIR}/src/matrixConditionNumber.c
         ${PARANUMAL_DIR}/src/matrixInverse.c
@@ -244,10 +245,9 @@ endif ()
 # target_include_directories when OCCA is updated.
 target_include_directories(libelliptic PUBLIC
         ${ELLIPTIC_DIR}
-        ${PARANUMAL_DIR}/include
         3rd_party/occa/include
         ${CMAKE_BINARY_DIR}/3rd_party/occa)
-target_link_libraries(libelliptic PUBLIC libparAlmond libogs libocca blasLapack)
+target_link_libraries(libelliptic PUBLIC libparanumal libparAlmond libogs libocca blasLapack)
 target_compile_definitions(libelliptic PUBLIC
         -DUSE_OCCA_MEM_BYTE_ALIGN=${USE_OCCA_MEM_BYTE_ALIGN}
         -DDELLIPTIC="${ELLIPTIC_DIR}"
