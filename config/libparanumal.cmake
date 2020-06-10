@@ -190,8 +190,6 @@ target_include_directories(libparAlmond PUBLIC
         ${LIB_PARALMOND_DIR}
         ${LIB_PARALMOND_DIR}/hypre
         )
-target_compile_options(libparAlmond PRIVATE -x c++)
-target_link_options(libparAlmond PRIVATE -x c++)
 target_compile_definitions(libparAlmond PUBLIC -DDPARALMOND="${LIB_PARALMOND_DIR}")
 target_link_libraries(libparAlmond PUBLIC libocca libgs HYPRE)
 
