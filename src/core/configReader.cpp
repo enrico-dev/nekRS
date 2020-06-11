@@ -20,20 +20,26 @@ void configRead(MPI_Comm comm)
   int rank;
   MPI_Comm_rank(comm, &rank);
   
-  string install_dir;
-  install_dir.assign(getenv("NEKRS_HOME"));
-  string configFile = install_dir + "/nekrs.conf";
-
-  const char *ptr = realpath(configFile.c_str(), NULL);
-  if (!ptr) {
-     if (rank == 0) cout << "\nERROR: Cannot find " << configFile << "!\n";
-     EXIT(1);
+  const char * env_ptr = getenv("NEKRS_HOME");
+  if (!env_ptr) {
+    if (rank == 0) {
+      std::cerr << endl << "ERROR: Environment variable NEKRS_HOME was not found" << endl;
+    }
+    EXIT(1);
   }
+
+  string install_dir{env_ptr};
+  string configFile = install_dir + "/nekrs.conf";
 
   char *rbuf;
   long fsize; 
   if(rank == 0) {
     FILE *f = fopen(configFile.c_str(), "rb");
+    if (!f) {
+      std::cerr << "ERROR opening " << configFile;
+      perror(" ");
+      MPI_Abort(comm, 1);
+    }
     fseek(f, 0, SEEK_END);
     fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
@@ -46,6 +52,7 @@ void configRead(MPI_Comm comm)
   MPI_Bcast(rbuf, fsize, MPI_CHAR, 0, comm); 
   stringstream is;
   is.write(rbuf, fsize);
+  delete rbuf;
 
   inipp::Ini<char> ini;
   ini.parse(is, false);
@@ -70,22 +77,22 @@ void configRead(MPI_Comm comm)
   ini.extract("general", "fflags", buf);
   setenv("NEKRS_FFLAGS", buf.c_str(), 1);
 
-  buf = install_dir + "/nek5000";
+  buf = install_dir + "3rd_party/nek5000";
   setenv("NEKRS_NEK5000_DIR", buf.c_str(), 1);
 
   ini.extract("general", "nek5000_pplist", buf);
   setenv("NEKRS_NEK5000_PPLIST", buf.c_str(), 1);
 
-  buf = install_dir + "/libparanumal";
+  buf = install_dir + "3rd_party/libparanumal";
   setenv("NEKRS_LIBP_DIR", buf.c_str(), 1);
 
   ini.extract("general", "libp_defines", buf);
   setenv("NEKRS_LIBP_DEFINES", buf.c_str(), 1);
 
-  buf = install_dir + "/udf";
+  buf = install_dir + "src/udf";
   setenv("NEKRS_UDF_DIR", buf.c_str(), 1);
 
-  buf = install_dir + "/nekInterface";
+  buf = install_dir + "src/nekInterface";
   setenv("NEKRS_NEKINTERFACE_DIR", buf.c_str(), 1);
 
   ini.extract("general", "occa_cxx", buf);
@@ -94,7 +101,7 @@ void configRead(MPI_Comm comm)
   ini.extract("general", "occa_cxxflags", buf);
   if(!getenv("OCCA_CXXFLAGS")) setenv("OCCA_CXXFLAGS", buf.c_str(), 1);
 
-  buf = install_dir + "/occa";
+  buf = install_dir + "3rd_party/occa";
   setenv("OCCA_DIR", buf.c_str(), 1);
 
   buf = install_dir;
