@@ -44,13 +44,17 @@ void velRecycling::buildKernel(ins_t *ins)
   string fileName;
   int rank = mesh->rank;
   fileName.assign(getenv("NEKRS_INSTALL_DIR"));
-  fileName += "/okl/velRecycling/velRecycling.okl";
+  fileName = "/home/rahaman/repos/nekRS-enrico/okl/plugins/okl/velRecycling/velRecycling.okl";
   occa::properties& kernelInfo = *ins->kernelInfo;
   for (int r=0;r<2;r++){
     if ((r==0 && rank==0) || (r==1 && rank>0)) {
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
        setBCVectorValueKernel =  mesh->device.buildKernel(fileName.c_str(), "setBCVectorValue", kernelInfo);
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
        getBCFluxKernel        =  mesh->device.buildKernel(fileName.c_str(), "getBCFlux", kernelInfo);
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
        sumReductionKernel     =  mesh->device.buildKernel(fileName.c_str(), "sumReduction", kernelInfo);
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
        scalarMultiplyKernel   =  mesh->device.buildKernel(fileName.c_str(), "scalarMultiply", kernelInfo);
     }
     MPI_Barrier(mesh->comm);

@@ -92,11 +92,13 @@ int main(int argc, char **argv)
     std::cout << "FATAL ERROR: Cannot initialize MPI!" << "\n";
     exit(1);
   }
+  std::cout << "Finished MPI_Init" << std::endl;
 
   int rank, size;
   MPI_Comm_dup(MPI_COMM_WORLD, &comm);
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &size);
+  std::cout << "Finished comm_size" << std::endl;
 
   cmdOptions *cmdOpt = processCmdLineOptions(argc, argv);
 
@@ -113,6 +115,7 @@ int main(int argc, char **argv)
   std::string cacheDir; 
   nekrs::setup(comm, cmdOpt->buildOnly, cmdOpt->sizeTarget,
                cmdOpt->ciMode, cacheDir, cmdOpt->setupFile);
+  std::cout << "Finished setup" << std::endl;
 
   if (cmdOpt->buildOnly) {
     MPI_Finalize(); 

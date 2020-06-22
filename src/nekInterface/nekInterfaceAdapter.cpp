@@ -200,9 +200,15 @@ void set_function_handles(const char *session_in,int verbose) {
   char lib_session[BUFSIZ], *error;
 
   const char *cache_dir = getenv("NEKRS_CACHE_DIR");
-  sprintf(lib_session, "%s/lib%s.so", cache_dir, session_in);
+  if (!cache_dir) {
+    if (rank == 0) {
+      std::cerr << endl << "ERROR: Environment variable NEKRS_CACHE_DIR was not found" << endl;
+    }
+    EXIT(1);
+  }
+  //sprintf(lib_session, "%s/libnek5000.so", cache_dir, session_in);
 
-  void *handle = dlopen(lib_session,RTLD_NOW|RTLD_GLOBAL);
+  void *handle = dlopen("/home/rahaman/repos/nekRS-enrico/build/libnek5000_nekrs.so",RTLD_NOW|RTLD_GLOBAL);
   if(!handle) {
     fprintf(stderr, "%s\n", dlerror());
     exit(EXIT_FAILURE);
@@ -396,74 +402,74 @@ void mkSIZE(int lx1, int lxd, int lelt, int lelg, int ldim, int lpmin, int ldimt
 }
 
 int buildNekInterface(const char *casename, int ldimt, int N, int np) {
-  printf("building nek ... "); fflush(stdout);
-
-  char buf[BUFSIZ];
-  char fflags[BUFSIZ];
-  char cflags[BUFSIZ];
-
-  const char *cache_dir = getenv("NEKRS_CACHE_DIR");
-  const char *nekInterface_dir = getenv("NEKRS_NEKINTERFACE_DIR");
-  const char *nek5000_dir = getenv("NEKRS_NEK5000_DIR");
-
-  FILE *fp;
-  int retval;
-
-  sprintf(buf, "%s.re2", casename);
-  fp = fopen(buf, "r");
-  if (!fp) {
-    printf("\nERROR: Cannot find %s!\n", buf);
-    exit(EXIT_FAILURE);;
-  }
-  fgets(buf, 80, fp);
-  fclose(fp);
-
-  char ver[10];
-  int nelgv, nelgt, ndim;
-  sscanf(buf, "%5s %9d %1d %9d", ver, &nelgt, &ndim, &nelgv);
-  int lelt = nelgt/np + 2;
-  mkSIZE(N+1, 1, lelt, nelgt, ndim, np, ldimt);
-
-  // Copy case.usr file to cache_dir
-  sprintf(buf,"%s.usr",casename);
-  if(access(buf,F_OK)!=-1){
-    sprintf(buf, "cp -pf %s.usr %s",casename,cache_dir);
-  } else {
-    sprintf(buf, "cp -pf %s/core/zero.usr %s/%s.usr",nek5000_dir,cache_dir,casename);
-  }
-  retval=system(buf);
-  if (retval) goto err;
-
-
-  // Copy Nek5000/core from install_dir to cache_dir
-  sprintf(buf, "cp -pr %s %s", nek5000_dir, cache_dir);
-  retval = system(buf);
-  if (retval) goto err; 
-
-  //TODO: Fix hardwired compiler flags 
-  sprintf(fflags, "\"${NEKRS_FFLAGS} -mcmodel=medium -fPIC -fcray-pointer -I../ \"");
-  sprintf(cflags, "\"${NEKRS_CXXFLAGS} -fPIC -I${NEKRS_NEKINTERFACE_DIR}\""); 
-
-  sprintf(buf, "cd %s && FC=\"${NEKRS_FC}\" CC=\"${NEKRS_CC}\" FFLAGS=%s "
-      "CFLAGS=%s PPLIST=\"${NEKRS_NEK5000_PPLIST}\" NEK_SOURCE_ROOT=%s/nek5000 "
-      "%s/nek5000/bin/nekconfig %s >>build.log 2>&1", cache_dir, fflags,
-      cflags, cache_dir, cache_dir, casename);
-  retval = system(buf);
-  if (retval) goto err; 
-  sprintf(buf, "cd %s && NEKRS_WORKING_DIR=%s make -j4 -f %s/Makefile nekInterface "
-      ">>build.log 2>&1", cache_dir, cache_dir, nekInterface_dir);
-  retval = system(buf);
-  if (retval) goto err; 
-
-  printf("done\n\n"); 
-  fflush(stdout);
-  sync();
-  return 0;
-
-err:
-  fflush(stdout);
-  printf("\nAn ERROR occured, see %s/build.log for details!\n", cache_dir);
-  exit(EXIT_FAILURE);
+//  printf("building nek ... "); fflush(stdout);
+//
+//  char buf[BUFSIZ];
+//  char fflags[BUFSIZ];
+//  char cflags[BUFSIZ];
+//
+//  const char *cache_dir = getenv("NEKRS_CACHE_DIR");
+//  const char *nekInterface_dir = getenv("NEKRS_NEKINTERFACE_DIR");
+//  const char *nek5000_dir = getenv("NEKRS_NEK5000_DIR");
+//
+//  FILE *fp;
+//  int retval;
+//
+//  sprintf(buf, "%s.re2", casename);
+//  fp = fopen(buf, "r");
+//  if (!fp) {
+//    printf("\nERROR: Cannot find %s!\n", buf);
+//    exit(EXIT_FAILURE);;
+//  }
+//  fgets(buf, 80, fp);
+//  fclose(fp);
+//
+//  char ver[10];
+//  int nelgv, nelgt, ndim;
+//  sscanf(buf, "%5s %9d %1d %9d", ver, &nelgt, &ndim, &nelgv);
+//  int lelt = nelgt/np + 2;
+//  mkSIZE(N+1, 1, lelt, nelgt, ndim, np, ldimt);
+//
+//  // Copy case.usr file to cache_dir
+//  sprintf(buf,"%s.usr",casename);
+//  if(access(buf,F_OK)!=-1){
+//    sprintf(buf, "cp -pf %s.usr %s",casename,cache_dir);
+//  } else {
+//    sprintf(buf, "cp -pf %s/core/zero.usr %s/%s.usr",nek5000_dir,cache_dir,casename);
+//  }
+//  retval=system(buf);
+//  if (retval) goto err;
+//
+//
+//  // Copy Nek5000/core from install_dir to cache_dir
+//  sprintf(buf, "cp -pr %s %s", nek5000_dir, cache_dir);
+//  retval = system(buf);
+//  if (retval) goto err; 
+//
+//  //TODO: Fix hardwired compiler flags 
+//  sprintf(fflags, "\"${NEKRS_FFLAGS} -mcmodel=medium -fPIC -fcray-pointer -I../ \"");
+//  sprintf(cflags, "\"${NEKRS_CXXFLAGS} -fPIC -I${NEKRS_NEKINTERFACE_DIR}\""); 
+//
+//  sprintf(buf, "cd %s && FC=\"${NEKRS_FC}\" CC=\"${NEKRS_CC}\" FFLAGS=%s "
+//      "CFLAGS=%s PPLIST=\"${NEKRS_NEK5000_PPLIST}\" NEK_SOURCE_ROOT=%s/nek5000 "
+//      "%s/nek5000/bin/nekconfig %s >>build.log 2>&1", cache_dir, fflags,
+//      cflags, cache_dir, cache_dir, casename);
+//  retval = system(buf);
+//  if (retval) goto err; 
+//  sprintf(buf, "cd %s && NEKRS_WORKING_DIR=%s make -j4 -f %s/Makefile nekInterface "
+//      ">>build.log 2>&1", cache_dir, cache_dir, nekInterface_dir);
+//  retval = system(buf);
+//  if (retval) goto err; 
+//
+//  printf("done\n\n"); 
+//  fflush(stdout);
+//  sync();
+//  return 0;
+//
+//err:
+//  fflush(stdout);
+//  printf("\nAn ERROR occured, see %s/build.log for details!\n", cache_dir);
+//  exit(EXIT_FAILURE);
 }
 
 int nek_setup(MPI_Comm c, setupAide &options_in, ins_t **ins_in) {

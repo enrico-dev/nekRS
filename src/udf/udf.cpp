@@ -9,43 +9,43 @@ UDF udf = {NULL, NULL, NULL, NULL};
 
 void udfBuild(const char *udfFile)
 {
-  char cmd[BUFSIZ];
-  char abs_path[BUFSIZ];
-  char *ptr;
-  int retval;
-
-  const char *cache_dir = getenv("NEKRS_CACHE_DIR");
-  const char *udf_dir = getenv("NEKRS_UDF_DIR");
-
-  printf("building udf ... "); fflush(stdout);
-  sprintf(cmd, "mkdir -p %s/udf", cache_dir);
-  system(cmd);
-
-  ptr = realpath(udfFile, abs_path);
-  if(!ptr) {
-    printf("\nERROR: Cannot find %s!\n", udfFile);
-    exit(EXIT_FAILURE);
-  }
- 
-  sprintf(cmd,"cp %s/CMakeLists.txt %s/udf", udf_dir, cache_dir);
-  system(cmd);
-  sprintf(cmd,"cd %s/udf && CXX=\"${NEKRS_CXX}\" CXXFLAGS=\"${NEKRS_CXXFLAGS}\" \
-      cmake -DUDF_DIR=\"%s\" -DFILENAME=\"%s\" . >build.log 2>&1", cache_dir, udf_dir, abs_path);
-  retval = system(cmd);
-  if(retval) goto err;
-
-  sprintf(cmd,"cd %s/udf && make >>build.log 2>&1", cache_dir);
-  retval = system(cmd);
-  if(retval) goto err;
-
-  printf("done\n");
-  fflush(stdout);
-  sync();
-  return;
-
-err:
-  printf("\nAn ERROR occured, see %s/udf/build.log for details!\n", cache_dir);
-  exit(EXIT_FAILURE);
+//  char cmd[BUFSIZ];
+//  char abs_path[BUFSIZ];
+//  char *ptr;
+//  int retval;
+//
+//  const char *cache_dir = getenv("NEKRS_CACHE_DIR");
+//  const char *udf_dir = getenv("NEKRS_UDF_DIR");
+//
+//  printf("building udf ... "); fflush(stdout);
+//  sprintf(cmd, "mkdir -p %s/udf", cache_dir);
+//  system(cmd);
+//
+//  ptr = realpath(udfFile, abs_path);
+//  if(!ptr) {
+//    printf("\nERROR: Cannot find %s!\n", udfFile);
+//    exit(EXIT_FAILURE);
+//  }
+// 
+//  sprintf(cmd,"cp %s/CMakeLists.txt %s/udf", udf_dir, cache_dir);
+//  system(cmd);
+//  sprintf(cmd,"cd %s/udf && CXX=\"${NEKRS_CXX}\" CXXFLAGS=\"${NEKRS_CXXFLAGS}\" \
+//      cmake -DUDF_DIR=\"%s\" -DFILENAME=\"%s\" . >build.log 2>&1", cache_dir, udf_dir, abs_path);
+//  retval = system(cmd);
+//  if(retval) goto err;
+//
+//  sprintf(cmd,"cd %s/udf && make >>build.log 2>&1", cache_dir);
+//  retval = system(cmd);
+//  if(retval) goto err;
+//
+//  printf("done\n");
+//  fflush(stdout);
+//  sync();
+//  return;
+//
+//err:
+//  printf("\nAn ERROR occured, see %s/udf/build.log for details!\n", cache_dir);
+//  exit(EXIT_FAILURE);
 }
 
 void *udfLoadFunction(const char *fname, int errchk)
@@ -56,7 +56,7 @@ void *udfLoadFunction(const char *fname, int errchk)
   sprintf(udfLib, "%s/udf/libUDF.so", cache_dir);
 
   void *h, *fptr;
-  h = dlopen(udfLib, RTLD_LAZY | RTLD_GLOBAL);
+  h = dlopen("/home/rahaman/repos/nekRS-enrico/build/libUDF.so", RTLD_LAZY | RTLD_GLOBAL);
   if (!h) goto err;
 
   fptr = dlsym(h,fname);

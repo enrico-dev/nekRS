@@ -4,6 +4,9 @@ enable_language(C CXX Fortran)
 include(FortranCInterface)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
+SET(CMAKE_BUILD_TYPE Debug)
+
+option(UDF_LOC ".udf file")
 
 #Link:https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
 #set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
@@ -115,6 +118,33 @@ include(config/libparanumal.cmake)
 ###############################################################################
 # NekRS targets
 ###############################################################################
+
+set(CASE_UDF_CPP ${CMAKE_CURRENT_BINARY_DIR}/case_udf.cpp)
+configure_file(${UDF_LOC} ${CASE_UDF_CPP} COPYONLY)
+add_library(libUDF SHARED ${CASE_UDF_CPP})
+set_target_properties(libUDF PROPERTIES OUTPUT_NAME UDF)
+target_include_directories(libUDF PUBLIC 
+  src
+  src/core
+  src/nekInterface
+  src/udf 
+  3rd_party/occa/include
+  ${CMAKE_BINARY_DIR}/3rd_party/occa
+  3rd_party/libparanumal/libs/gatherScatter
+  3rd_party/libparanumal/libs/parAlmond
+  3rd_party/libparanumal/include
+  3rd_party/libparanumal/solvers/elliptic
+  src/3rd_party/libparanumal/include
+  )
+target_link_libraries(libUDF PUBLIC libocca libparanumal)
+
+add_library(libnek5000_nekrs SHARED src/nekInterface/nekInterface.f)
+set_target_properties(libnek5000_nekrs PROPERTIES OUTPUT_NAME nek5000_nekrs)
+# TODO: Discover -fcray-pointers properly
+target_compile_options(libnek5000_nekrs PRIVATE -fcray-pointer -fdefault-real-8 -fdefault-double-8)
+target_include_directories(libnek5000_nekrs PRIVATE src/nekInterface)
+target_link_libraries(libnek5000_nekrs PRIVATE libnek5000)
+
 set(NEKRS_SRC
         src/nekrs.cpp
         src/core/cfl.cpp
@@ -136,6 +166,7 @@ set(NEKRS_SRC
         src/core/timer.cpp
         src/plugins/avg.cpp
         src/plugins/velRecycling.cpp
+        ${CASE_UDF_CPP}
         ## To get fortran flags
         src/dummy.f
         )
@@ -152,11 +183,14 @@ target_include_directories(libnekrs PUBLIC
 target_link_libraries(libnekrs PUBLIC
         libocca
         libparanumal
-        libnek5000
         libelliptic
         libparAlmond
         libgs
+        ${CMAKE_DL_LIBS}
         )
+
+add_dependencies(libnekrs libnek5000_nekrs)
+add_dependencies(libnekrs libUDF)
 
 add_executable(nekrs src/main.cpp)
 target_link_libraries(nekrs PUBLIC libnekrs)

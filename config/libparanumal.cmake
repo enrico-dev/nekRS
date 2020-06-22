@@ -1,13 +1,21 @@
 # TODO: Need to get value from OCCA?
 set(USE_OCCA_MEM_BYTE_ALIGN 64)
 
-set(PARANUMAL_DIR 3rd_party/libparanumal)
+set(PARANUMAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/libparanumal)
+set(OGS_DIR ${PARANUMAL_DIR}/libs/gatherScatter)
+set(PARALMOND_DIR ${PARANUMAL_DIR}/libs/parAlmond)
+set(ELLIPTIC_DIR ${PARANUMAL_DIR}/solvers/elliptic)
+
+add_definitions(
+  -DDHOLMES="${PARANUMAL_DIR}"
+  -DDOGS="${OGS_DIR}"
+  -DDPARALMOND="${PARALMOND_DIR}"
+  -DUSE_OCCA_MEM_BYTE_ALIGN=${USE_OCCA_MEM_BYTE_ALIGN}
+  -DDELLIPTIC="${ELLIPTIC_DIR}")
 
 # ---------------------------------------------------------
 # libogs
 # ---------------------------------------------------------
-
-set(OGS_DIR ${PARANUMAL_DIR}/libs/gatherScatter)
 
 set(OGS_SOURCES
         ${OGS_DIR}/src/ogsGather.cpp
@@ -45,9 +53,6 @@ target_include_directories(libogs PUBLIC
         ${CMAKE_BINARY_DIR}/3rd_party/occa
         ${PARANUMAL_DIR}/include)
 target_link_libraries(libogs PUBLIC libgs libocca)
-target_compile_definitions(libogs PUBLIC
-        -DDHOLMES="${PARANUMAL_DIR}"
-        -DDOGS="${OGS_DIR}")
 
 # ---------------------------------------------------------
 # libparanumal
@@ -144,14 +149,11 @@ target_include_directories(libparanumal PUBLIC
         3rd_party/occa/include
         ${CMAKE_BINARY_DIR}/3rd_party/occa)
 target_link_libraries(libparanumal PUBLIC libogs libocca blasLapack)
-target_compile_definitions(libparanumal PUBLIC
-        -DDHOLMES="${PARANUMAL_DIR}")
 
 # ---------------------------------------------------------
 # libparAlmond
 # ---------------------------------------------------------
 
-set(PARALMOND_DIR ${PARANUMAL_DIR}/libs/parAlmond)
 
 set(PARALMOND_SOURCES
         ${PARALMOND_DIR}/hypre/hypre.c
@@ -188,14 +190,12 @@ target_include_directories(libparAlmond PUBLIC
         ${PARANUMAL_DIR}/include
         3rd_party/occa/include
         ${CMAKE_BINARY_DIR}/3rd_party/occa)
-target_compile_definitions(libparAlmond PUBLIC -DDPARALMOND="${PARALMOND_DIR}")
 target_link_libraries(libparAlmond PUBLIC libogs libocca HYPRE)
 
 # ---------------------------------------------------------
 # libelliptic
 # ---------------------------------------------------------
 
-set(ELLIPTIC_DIR ${PARANUMAL_DIR}/solvers/elliptic)
 
 set(ELLIPTIC_SOURCES
         ${ELLIPTIC_DIR}/src/NBFPCG.c
@@ -248,10 +248,6 @@ target_include_directories(libelliptic PUBLIC
         3rd_party/occa/include
         ${CMAKE_BINARY_DIR}/3rd_party/occa)
 target_link_libraries(libelliptic PUBLIC libparanumal libparAlmond libogs libocca blasLapack)
-target_compile_definitions(libelliptic PUBLIC
-        -DUSE_OCCA_MEM_BYTE_ALIGN=${USE_OCCA_MEM_BYTE_ALIGN}
-        -DDELLIPTIC="${ELLIPTIC_DIR}"
-        -DDHOLMES="${PARANUMAL_DIR}")
 
 
 

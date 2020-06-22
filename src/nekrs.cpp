@@ -32,6 +32,7 @@ void setup(MPI_Comm comm_in, int buildOnly, int sizeTarget,
   MPI_Comm_size(comm, &size);
 
   configRead(comm);
+  std::cout << "Finished config_read" << std::endl;
  
   nrsBuildOnly = buildOnly; 
   string setupFile = _setupFile + ".par";

@@ -275,7 +275,7 @@ ins_t *insSetup(MPI_Comm comm, setupAide &options, int buildOnly)
   }
  
   occa::properties kernelInfoBC = kernelInfo;
-  const string bcDataFile = install_dir + "/include/insBcData.h";
+  const string bcDataFile = "/home/rahaman/repos/nekRS-enrico/src/insBcData.h";
   kernelInfoBC["includes"] += bcDataFile.c_str();
   string boundaryHeaderFileName; 
   options.getArgs("DATA FILE", boundaryHeaderFileName);
@@ -519,7 +519,7 @@ ins_t *insSetup(MPI_Comm comm, setupAide &options, int buildOnly)
   // build kernels
   string fileName, kernelName ;
   const string suffix = "Hex3D";
-  const string oklpath = install_dir + "/okl/core/";
+  const string oklpath = "/home/rahaman/repos/nekRS-enrico/okl/core/";
 
   for (int r=0;r<2;r++){
     if ((r==0 && mesh->rank==0) || (r==1 && mesh->rank>0)) {
@@ -527,32 +527,39 @@ ins_t *insSetup(MPI_Comm comm, setupAide &options, int buildOnly)
       fileName = oklpath + "insAdvection" + suffix + ".okl";
 
       kernelName = "insStrongAdvectionVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->advectionStrongVolumeKernel =  
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
       kernelName = "insStrongAdvectionCubatureVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->advectionStrongCubatureVolumeKernel =  
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
       
       fileName = oklpath + "insAx" + suffix + ".okl";
       kernelName = "insAx" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->AxKernel = mesh->device.buildKernel(fileName, kernelName, kernelInfo);  
      
       fileName = oklpath + "insCurl" + suffix + ".okl";
       kernelName = "insCurl" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->curlKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);  
 
       fileName = oklpath + "insMassMatrix" + ".okl";
       kernelName = "insMassMatrix" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->massMatrixKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);  
 
       kernelName = "insInvMassMatrix" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->invMassMatrixKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);  
 
       fileName = oklpath + "insGradient" + suffix + ".okl";
       kernelName = "insGradientVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->gradientVolumeKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
       fileName = oklpath + "insSumMakef" + suffix + ".okl";
@@ -562,79 +569,95 @@ ins_t *insSetup(MPI_Comm comm, setupAide &options, int buildOnly)
 
       fileName = oklpath + "insDivergence" + suffix + ".okl";
       kernelName = "insDivergenceVolumeTOMBO" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->divergenceVolumeKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfoBC);
 
       kernelName = "insDivergenceSurfaceTOMBO" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->divergenceSurfaceKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfoBC);
 
       fileName = oklpath + "insPressureRhs" + suffix + ".okl";
       kernelName = "insPressureRhsTOMBO" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->pressureRhsKernel =  
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "insPressureBC" + suffix + ".okl";
       kernelName = "insPressureAddBCTOMBO" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->pressureAddBCKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfoBC);
 
       fileName = oklpath + "insPressureUpdate" + ".okl";
       kernelName = "insPressureUpdateTOMBO";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->pressureUpdateKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
   
       fileName = oklpath + "insVelocityRhs" + suffix + ".okl";
       kernelName = "insVelocityRhsTOMBO" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->velocityRhsKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
      
       fileName = oklpath + "insVelocityBC" + suffix + ".okl";
       kernelName = "insVelocityBC" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->velocityRhsBCKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfoBC);
 
       kernelName = "insVelocityAddBC" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->velocityAddBCKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfoBC);
 
       fileName = oklpath + "insSubCycle" + suffix + ".okl";
       kernelName = "insSubCycleStrongCubatureVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->subCycleStrongCubatureVolumeKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       kernelName = "insSubCycleStrongVolume" + suffix; 
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->subCycleStrongVolumeKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "insSubCycleRKUpdate" + ".okl";
       kernelName = "insSubCycleLSERKUpdate";
       if(ins->SNrk==4) kernelName = "insSubCycleERKUpdate";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->subCycleRKUpdateKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "insVelocityExt" + ".okl";
       kernelName = "insVelocityExt";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->velocityExtKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       // ===========================================================================
 
-      fileName = install_dir + "/libparanumal/okl/scaledAdd.okl";
+      fileName = "/home/rahaman/repos/nekRS-enrico/3rd_party/libparanumal/okl/scaledAdd.okl";
       kernelName = "scaledAddwOffset";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->scaledAddKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
-      fileName = install_dir + "/libparanumal/okl/addScalar.okl";
+      fileName = "/home/rahaman/repos/nekRS-enrico/3rd_party/libparanumal/okl/addScalar.okl";
       kernelName = "setScalar";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->setScalarKernel =  
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "math" + ".okl";
       kernelName = "max";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->maxKernel =  
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       kernelName = "scalarScaledAdd";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->scalarScaledAddKernel =  
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
@@ -642,40 +665,48 @@ ins_t *insSetup(MPI_Comm comm, setupAide &options, int buildOnly)
 
       fileName = oklpath + "insFilterRT" + suffix + ".okl";
       kernelName = "insFilterRT" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->filterRTKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "insCfl" + suffix + ".okl";
       kernelName = "insCfl" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->cflKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "insQtl" + suffix + ".okl";
       kernelName = "insQtl" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->qtlKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "insPressureAddQtl" + ".okl";
       kernelName = "insPressureAddQtl";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->pressureAddQtlKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName = oklpath + "setEllipticCoeff.okl"; 
       kernelName = "setEllipticCoeff";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->setEllipticCoeffKernel =  
         mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
       kernelName = "setEllipticCoeffPressure";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->setEllipticCoeffPressureKernel =  
         mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
       fileName = oklpath + "insPQ.okl"; 
       kernelName = "insPQ";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->pqKernel =  
         mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
       fileName = oklpath + "insNC.okl"; 
       kernelName = "insNC";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       ins->ncKernel =  
         mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
@@ -922,7 +953,7 @@ cds_t *cdsSetup(ins_t *ins, mesh_t *mesh, setupAide options, occa::properties &k
   occa::properties kernelInfoBC = kernelInfo;
   //kernelInfo["defines/" "p_NSfields"]  = cds->NSfields;
 
-  const string bcDataFile = install_dir + "/include/insBcData.h";
+  const string bcDataFile = "/home/rahaman/repos/nekRS-enrico/src/insBcData.h";
   kernelInfoBC["includes"] += bcDataFile.c_str();
   string boundaryHeaderFileName; 
   options.getArgs("DATA FILE", boundaryHeaderFileName);
@@ -930,7 +961,7 @@ cds_t *cdsSetup(ins_t *ins, mesh_t *mesh, setupAide options, occa::properties &k
 
   string fileName, kernelName;
   const string suffix = "Hex3D";
-  const string oklpath = install_dir + "/okl/core/";
+  const string oklpath = "/home/rahaman/repos/nekRS-enrico/okl/core/";
 
   for (int r=0;r<2;r++){
     if ((r==0 && mesh->rank==0) || (r==1 && mesh->rank>0)) {
@@ -938,66 +969,81 @@ cds_t *cdsSetup(ins_t *ins, mesh_t *mesh, setupAide options, occa::properties &k
       fileName = oklpath + "cdsAdvection" + suffix + ".okl";
 
       kernelName = "cdsStrongAdvectionVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->advectionStrongVolumeKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
       kernelName = "cdsStrongAdvectionCubatureVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->advectionStrongCubatureVolumeKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
       // ===========================================================================
 
-      fileName = install_dir + "/libparanumal/okl/addScalar.okl";
+      fileName = "/home/rahaman/repos/nekRS-enrico/3rd_party/libparanumal/okl/addScalar.okl";
       kernelName = "setScalar";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->setScalarKernel =  
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       fileName   = oklpath + "cdsSumMakef" + suffix + ".okl"; 
       kernelName = "cdsSumMakef" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->sumMakefKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
       
       fileName = oklpath + "cdsHelmholtzBC" + suffix + ".okl"; 
       kernelName = "cdsHelmholtzBC" + suffix; 
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->helmholtzRhsBCKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfoBC);
 
       kernelName = "cdsHelmholtzAddBC" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->helmholtzAddBCKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfoBC);
 
       fileName = oklpath + "setEllipticCoeff.okl"; 
       kernelName = "setEllipticCoeff";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->setEllipticCoeffKernel =  
         mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
       fileName = oklpath + "cdsMassMatrix.okl"; 
       kernelName = "cdsMassMatrix" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->massMatrixKernel = mesh->device.buildKernel(fileName, kernelName, kernelInfo);  
 
       kernelName = "cdsInvMassMatrix" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->invMassMatrixKernel = mesh->device.buildKernel(fileName, kernelName, kernelInfo);  
 
       fileName = oklpath + "cdsFilterRT" + suffix + ".okl"; 
       kernelName = "cdsFilterRT" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->filterRTKernel =
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
-      fileName = install_dir + "/libparanumal/okl/scaledAdd.okl";
+      fileName = "/home/rahaman/repos/nekRS-enrico/3rd_party//libparanumal/okl/scaledAdd.okl";
       kernelName = "scaledAddwOffset";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->scaledAddKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
       if(cds->Nsubsteps){
         fileName = oklpath + "cdsSubCycle" + suffix + ".okl"; 
         kernelName = "cdsSubCycleStrongCubatureVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
         cds->subCycleStrongCubatureVolumeKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
         kernelName = "cdsSubCycleStrongVolume" + suffix;
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
         cds->subCycleStrongVolumeKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
 
         fileName = oklpath + "cdsSubCycleRKUpdate.okl";
         kernelName = "cdsSubCycleLSERKUpdate";
         if(cds->SNrk==4) kernelName = "cdsSubCycleERKUpdate";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
         cds->subCycleRKUpdateKernel =  mesh->device.buildKernel(fileName, kernelName, kernelInfo);
       }
       fileName = oklpath + "insVelocityExt" + ".okl";
       kernelName = "insVelocityExt";
+      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
       cds->velocityExtKernel = 
         mesh->device.buildKernel(fileName.c_str(), kernelName.c_str(), kernelInfo);
 
