@@ -127,16 +127,24 @@ target_include_directories(libUDF PUBLIC
   src
   src/core
   src/nekInterface
-  src/udf 
-  3rd_party/occa/include
-  ${CMAKE_BINARY_DIR}/3rd_party/occa
-  3rd_party/libparanumal/libs/gatherScatter
-  3rd_party/libparanumal/libs/parAlmond
-  3rd_party/libparanumal/include
-  3rd_party/libparanumal/solvers/elliptic
-  src/3rd_party/libparanumal/include
-  )
+        src/udf
+        3rd_party/occa/include
+        ${CMAKE_BINARY_DIR}/3rd_party/occa
+        3rd_party/libparanumal/libs/gatherScatter
+        3rd_party/libparanumal/libs/parAlmond
+        3rd_party/libparanumal/include
+        3rd_party/libparanumal/solvers/elliptic
+        src/3rd_party/libparanumal/include
+        )
 target_link_libraries(libUDF PUBLIC libocca libparanumal)
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  if (${CMAKE_VERSION} VERSION_LESS "3.13")
+    set_target_properties(libUDF PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  else ()
+    target_link_options(libUDF PRIVATE -undefined dynamic_lookup)
+  endif ()
+endif ()
 
 add_library(libnek5000_nekrs SHARED src/nekInterface/nekInterface.f)
 set_target_properties(libnek5000_nekrs PROPERTIES OUTPUT_NAME nek5000_nekrs)
