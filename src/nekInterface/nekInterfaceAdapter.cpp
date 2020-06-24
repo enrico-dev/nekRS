@@ -208,7 +208,7 @@ void set_function_handles(const char *session_in,int verbose) {
   }
   //sprintf(lib_session, "%s/libnek5000.so", cache_dir, session_in);
 
-  void *handle = dlopen("/home/rahaman/repos/nekRS-enrico/build/libnek5000_nekrs.so",RTLD_NOW|RTLD_GLOBAL);
+  void *handle = dlopen("/Users/ronald/repos/nekRS/build/libnek5000_nekrs.dylib",RTLD_NOW|RTLD_GLOBAL);
   if(!handle) {
     fprintf(stderr, "%s\n", dlerror());
     exit(EXIT_FAILURE);

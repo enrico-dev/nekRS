@@ -77,22 +77,22 @@ void configRead(MPI_Comm comm)
   ini.extract("general", "fflags", buf);
   setenv("NEKRS_FFLAGS", buf.c_str(), 1);
 
-  buf = "/home/rahaman/repos/nekRS-enrico/3rd_party/nek5000";
+  buf = "/Users/ronald/repos/nekRS/3rd_party/nek5000";
   setenv("NEKRS_NEK5000_DIR", buf.c_str(), 1);
 
   ini.extract("general", "nek5000_pplist", buf);
   setenv("NEKRS_NEK5000_PPLIST", buf.c_str(), 1);
 
-  buf = "/home/rahaman/repos/nekRS-enrico/3rd_party/libparanumal";
+  buf = "/Users/ronald/repos/nekRS/3rd_party/libparanumal";
   setenv("NEKRS_LIBP_DIR", buf.c_str(), 1);
 
   ini.extract("general", "libp_defines", buf);
   setenv("NEKRS_LIBP_DEFINES", buf.c_str(), 1);
 
-  buf = "/home/rahaman/repos/nekRS-enrico/src/udf";
+  buf = "/Users/ronald/repos/nekRS/src/udf";
   setenv("NEKRS_UDF_DIR", buf.c_str(), 1);
 
-  buf = "/home/rahaman/repos/nekRS-enrico/src/nekInterface";
+  buf = "/Users/ronald/repos/nekRS/src/nekInterface";
   setenv("NEKRS_NEKINTERFACE_DIR", buf.c_str(), 1);
 
   ini.extract("general", "occa_cxx", buf);
@@ -101,7 +101,7 @@ void configRead(MPI_Comm comm)
   ini.extract("general", "occa_cxxflags", buf);
   if(!getenv("OCCA_CXXFLAGS")) setenv("OCCA_CXXFLAGS", buf.c_str(), 1);
 
-  buf = install_dir + "/home/rahaman/repos/nekRS-enrico/3rd_party/occa";
+  buf = install_dir + "/Users/ronald/repos/nekRS/3rd_party/occa";
   setenv("OCCA_DIR", buf.c_str(), 1);
 
   buf = install_dir;

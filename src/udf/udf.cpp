@@ -56,7 +56,7 @@ void *udfLoadFunction(const char *fname, int errchk)
   sprintf(udfLib, "%s/udf/libUDF.so", cache_dir);
 
   void *h, *fptr;
-  h = dlopen("/home/rahaman/repos/nekRS-enrico/build/libUDF.so", RTLD_LAZY | RTLD_GLOBAL);
+  h = dlopen("/Users/ronald/repos/nekRS/build/libUDF.dylib", RTLD_LAZY | RTLD_GLOBAL);
   if (!h) goto err;
 
   fptr = dlsym(h,fname);

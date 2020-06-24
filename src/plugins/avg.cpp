@@ -46,13 +46,11 @@ void avg::buildKernel(ins_t *ins)
   string fileName;
   int rank = mesh->rank;
   fileName.assign(getenv("NEKRS_INSTALL_DIR"));
-  fileName = "/home/rahaman/repos/nekRS-enrico/okl/plugins/avg.okl";
+  fileName = "/Users/ronald/repos/nekRS/okl/plugins/avg.okl";
   occa::properties& kernelInfo = *ins->kernelInfo;
   for (int r=0;r<2;r++){
     if ((r==0 && rank==0) || (r==1 && rank>0)) {
-      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
        avgX_XXKernel     = mesh->device.buildKernel(fileName.c_str(), "avgX_XX"    , kernelInfo);
-      std::cout << "*** DEBUG:  " << __FILE__ << " : " << __LINE__ << std::endl;
        avgXYKernel = mesh->device.buildKernel(fileName.c_str(), "avgXY", kernelInfo);
     }
     MPI_Barrier(mesh->comm);

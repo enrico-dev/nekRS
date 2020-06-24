@@ -6,12 +6,7 @@ set(OGS_DIR ${PARANUMAL_DIR}/libs/gatherScatter)
 set(PARALMOND_DIR ${PARANUMAL_DIR}/libs/parAlmond)
 set(ELLIPTIC_DIR ${PARANUMAL_DIR}/solvers/elliptic)
 
-add_definitions(
-  -DDHOLMES="${PARANUMAL_DIR}"
-  -DDOGS="${OGS_DIR}"
-  -DDPARALMOND="${PARALMOND_DIR}"
-  -DUSE_OCCA_MEM_BYTE_ALIGN=${USE_OCCA_MEM_BYTE_ALIGN}
-  -DDELLIPTIC="${ELLIPTIC_DIR}")
+add_definitions( -DUSE_OCCA_MEM_BYTE_ALIGN=${USE_OCCA_MEM_BYTE_ALIGN} )
 
 # ---------------------------------------------------------
 # libogs
@@ -43,14 +38,10 @@ set(OGS_SOURCES
 
 add_library(libogs ${OGS_SOURCES})
 set_target_properties(libogs PROPERTIES OUTPUT_NAME ogs)
-# TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
-# when linking to libocca.  Hence, we can remove it from
-# target_include_directories when OCCA is updated.
+target_compile_definitions(libogs PUBLIC -DDOGS="${OGS_DIR}")
 target_include_directories(libogs PUBLIC
         ${OGS_DIR}/include
         ${OGS_DIR}
-        3rd_party/occa/include
-        ${CMAKE_BINARY_DIR}/3rd_party/occa
         ${PARANUMAL_DIR}/include)
 target_link_libraries(libogs PUBLIC libgs libocca)
 
@@ -135,19 +126,13 @@ set(PARANUMAL_SOURCES
 add_library(libparanumal ${PARANUMAL_SOURCES})
 set_target_properties(libparanumal PROPERTIES OUTPUT_NAME paranumal)
 target_compile_options(libparanumal PRIVATE -x c++)
+target_compile_definitions(libparanumal PUBLIC -DDHOLMES="${PARANUMAL_DIR}")
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
     target_link_options(libparanumal PRIVATE -x c++)
 else ()
     set_target_properties(libparanumal PROPERTIES LINK_FLAGS "-x c++")
 endif ()
-# TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
-# when linking to libocca.  Hence, we can remove it from
-# target_include_directories when OCCA is updated.
-target_include_directories(libparanumal PUBLIC
-        ${PARANUMAL_DIR}/include
-        src/core/
-        3rd_party/occa/include
-        ${CMAKE_BINARY_DIR}/3rd_party/occa)
+target_include_directories(libparanumal PUBLIC ${PARANUMAL_DIR}/include src/core/)
 target_link_libraries(libparanumal PUBLIC libogs libocca blasLapack)
 
 # ---------------------------------------------------------
@@ -180,17 +165,25 @@ set(PARALMOND_SOURCES
 
 add_library(libparAlmond ${PARALMOND_SOURCES})
 set_target_properties(libparAlmond PROPERTIES OUTPUT_NAME parAlmond)
-# TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
-# when linking to libocca.  Hence, we can remove it from
-# target_include_directories when OCCA is updated.
+target_compile_definitions(libparAlmond PUBLIC -DDPARALMOND="${PARALMOND_DIR}")
+target_compile_options(libparAlmond PRIVATE -DHYPRE)
 target_include_directories(libparAlmond PUBLIC
         ${PARALMOND_DIR}/include
         ${PARALMOND_DIR}
         ${PARALMOND_DIR}/hypre
         ${PARANUMAL_DIR}/include
-        3rd_party/occa/include
-        ${CMAKE_BINARY_DIR}/3rd_party/occa)
+        3rd_party/hypre/src
+        3rd_party/hypre/src/utilities
+        3rd_party/hypre/src/seq_mv
+        3rd_party/hypre/src/parcsr_mv
+        3rd_party/hypre/src/parcsr_ls
+        3rd_party/hypre/src/IJ_mv
+        3rd_party/hypre/src/multivector
+        3rd_party/hypre/src/krylov
+        ${CMAKE_CURRENT_BINARY_DIR}/3rd_party/hypre/src)
 target_link_libraries(libparAlmond PUBLIC libogs libocca HYPRE)
+# This conflicts with the stdlib "version" header...
+file(REMOVE 3rd_party/hypre/src/utilities/version)
 
 # ---------------------------------------------------------
 # libelliptic
@@ -234,19 +227,14 @@ set(ELLIPTIC_SOURCES
 
 add_library(libelliptic ${ELLIPTIC_SOURCES})
 set_target_properties(libelliptic PROPERTIES OUTPUT_NAME elliptic)
+target_compile_definitions(libelliptic PUBLIC -DDELLIPTIC="${ELLIPTIC_DIR}")
 target_compile_options(libelliptic PRIVATE -x c++)
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
     target_link_options(libelliptic PRIVATE -x c++)
 else ()
     set_target_properties(libelliptic PROPERTIES LINK_FLAGS "-x c++")
 endif ()
-# TODO:  In updated OCCA CMakeLists, occa/include is  publicly available
-# when linking to libocca.  Hence, we can remove it from
-# target_include_directories when OCCA is updated.
-target_include_directories(libelliptic PUBLIC
-        ${ELLIPTIC_DIR}
-        3rd_party/occa/include
-        ${CMAKE_BINARY_DIR}/3rd_party/occa)
+target_include_directories(libelliptic PUBLIC ${ELLIPTIC_DIR})
 target_link_libraries(libelliptic PUBLIC libparanumal libparAlmond libogs libocca blasLapack)
 
 
