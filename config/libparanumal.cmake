@@ -123,22 +123,16 @@ set(PARANUMAL_SOURCES
         ${PARANUMAL_DIR}/src/setupAide.c
         ${PARANUMAL_DIR}/src/timer.c)
 
+set_source_files_properties(${PARANUMAL_SOURCES} PROPERTIES LANGUAGE CXX)
 add_library(libparanumal ${PARANUMAL_SOURCES})
 set_target_properties(libparanumal PROPERTIES OUTPUT_NAME paranumal)
-target_compile_options(libparanumal PRIVATE -x c++)
 target_compile_definitions(libparanumal PUBLIC -DDHOLMES="${PARANUMAL_DIR}")
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
-    target_link_options(libparanumal PRIVATE -x c++)
-else ()
-    set_target_properties(libparanumal PROPERTIES LINK_FLAGS "-x c++")
-endif ()
 target_include_directories(libparanumal PUBLIC ${PARANUMAL_DIR}/include src/core/)
 target_link_libraries(libparanumal PUBLIC libogs libocca blasLapack)
 
 # ---------------------------------------------------------
 # libparAlmond
 # ---------------------------------------------------------
-
 
 set(PARALMOND_SOURCES
         ${PARALMOND_DIR}/hypre/hypre.c
@@ -189,7 +183,6 @@ file(REMOVE 3rd_party/hypre/src/utilities/version)
 # libelliptic
 # ---------------------------------------------------------
 
-
 set(ELLIPTIC_SOURCES
         ${ELLIPTIC_DIR}/src/NBFPCG.c
         ${ELLIPTIC_DIR}/src/NBPCG.c
@@ -225,15 +218,10 @@ set(ELLIPTIC_SOURCES
         ${ELLIPTIC_DIR}/src/ellipticWeightedNorm2.c
         ${ELLIPTIC_DIR}/src/ellipticZeroMean.c)
 
+set_source_files_properties(${ELLIPTIC_SOURCES} PROPERTIES LANGUAGE CXX)
 add_library(libelliptic ${ELLIPTIC_SOURCES})
 set_target_properties(libelliptic PROPERTIES OUTPUT_NAME elliptic)
 target_compile_definitions(libelliptic PUBLIC -DDELLIPTIC="${ELLIPTIC_DIR}")
-target_compile_options(libelliptic PRIVATE -x c++)
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
-    target_link_options(libelliptic PRIVATE -x c++)
-else ()
-    set_target_properties(libelliptic PROPERTIES LINK_FLAGS "-x c++")
-endif ()
 target_include_directories(libelliptic PUBLIC ${ELLIPTIC_DIR})
 target_link_libraries(libelliptic PUBLIC libparanumal libparAlmond libogs libocca blasLapack)
 
